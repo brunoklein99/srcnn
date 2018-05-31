@@ -1,5 +1,9 @@
+from os import listdir
+from os.path import join
+
 import tensorflow as tf
 from comet_ml import Experiment
+from keras.callbacks import ModelCheckpoint
 from keras.losses import mean_squared_error
 
 import settings
@@ -28,9 +32,17 @@ def main():
 
     x, y = load_data('../data/91sr/sub')
 
+    checkpoint = ModelCheckpoint(filepath='checkpoints/weights.{psnr:.2f}.hdf5', monitor='psnr')
+
     opt = LRMultiplierSGD(lr=1e-4, momentum=0.9, multipliers=[1, 1, 1, 1, 0.1, 0.1])
     model.compile(optimizer=opt, loss=mean_squared_error, metrics=[psnr])
-    model.fit(x, y, batch_size=settings.BATCH_SIZE, epochs=settings.EPOCHS)
+
+    weights = listdir('checkpoints')
+    weights = sorted(weights, reverse=True)
+    if len(weights) > 0:
+        model.load_weights(filepath=join('checkpoints', weights[0]))
+
+    model.fit(x, y, batch_size=settings.BATCH_SIZE, epochs=settings.EPOCHS, callbacks=[checkpoint])
 
 
 if __name__ == "__main__":
