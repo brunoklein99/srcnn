@@ -9,9 +9,9 @@ from keras.losses import mean_squared_error
 import settings
 from LRMultiplierSGD import LRMultiplierSGD
 from data_load import load_data
-from model import get_model
+from model import get_model, get_model_default
 
-experiment = Experiment(api_key="o1YplG6lPqzCodSyFRtQvkys1", project_name="srcnn")
+# experiment = Experiment(api_key="o1YplG6lPqzCodSyFRtQvkys1", project_name="srcnn")
 
 
 def psnr(y_true, y_pred):  # peak signal-to-noise ratio
@@ -27,7 +27,7 @@ def log10(x):
 
 
 def main():
-    model = get_model(c=1, n1=64, n2=32, f1=9, f2=1, f3=5, fsub=33)
+    model = get_model_default()
     model.summary()
 
     x, y = load_data('../data/91sr/sub')
